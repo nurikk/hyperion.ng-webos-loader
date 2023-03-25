@@ -6,7 +6,7 @@ on:
   workflow_call:
 
 env:
-  TOOLCHAIN_URL: https://github.com/openlgtv/buildroot-nc4/releases/download/webos-c592d84/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz
+  TOOLCHAIN_URL: https://github.com/openlgtv/buildroot-nc4/releases/download/webos-800cec9/arm-webos-linux-gnueabi_sdk-buildroot.tar.gz
   TOOLCHAIN_DIR: /opt/arm-webos-linux-gnueabi_sdk-buildroot
   TOOLCHAIN_ENV_FILE: /opt/arm-webos-linux-gnueabi_sdk-buildroot/environment-setup
   TOOLCHAIN_FILE: /opt/arm-webos-linux-gnueabi_sdk-buildroot/share/buildroot/toolchainfile.cmake
@@ -29,8 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: hyperion-project/hyperion.ng
-          ref: 2.0.15
+          repository: nurikk/hyperion.ng
+          ref: ftdi
           path: hyperion.ng
           submodules: recursive
           fetch-depth: 0
@@ -71,7 +71,7 @@ jobs:
 
       - name: Install native dependencies
         env:
-          apt_deps: ccache git cmake build-essential qtbase5-dev libqt5serialport5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev python3-dev libxcb-image0-dev libxcb-util0-dev libxcb-shm0-dev libxcb-render0-dev libxcb-randr0-dev libxrandr-dev libxrender-dev libturbojpeg0-dev libssl-dev libmbedtls-dev
+          apt_deps: ccache git cmake build-essential qtbase5-dev libqt5serialport5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev python3-dev libxcb-image0-dev libxcb-util0-dev libxcb-shm0-dev libxcb-render0-dev libxcb-randr0-dev libxrandr-dev libxrender-dev libturbojpeg0-dev libssl-dev libmbedtls-dev libftdi1-dev
         run: |
           sudo apt update
           sudo apt install -y ${{ env.apt_deps }}
@@ -106,6 +106,7 @@ jobs:
             -DENABLE_MDNS=OFF \
             -DENABLE_FLATBUF_CONNECT=ON \
             -DENABLE_PROTOBUF_SERVER=OFF \
+            -DENABLE_FTDIDEV=ON \
             -Wno-dev
           make
           popd
@@ -137,7 +138,8 @@ jobs:
             -DENABLE_PROTOBUF_SERVER=OFF \
             -DENABLE_FORWARDER=ON \
             -DENABLE_FLATBUF_CONNECT=ON \
-            -DIMPORT_FLATC=${GITHUB_WORKSPACE}/hyperion.ng/${BUILD_DIR_NATIVE}/flatc_export.cmake
+            -DIMPORT_FLATC=${GITHUB_WORKSPACE}/hyperion.ng/${BUILD_DIR_NATIVE}/flatc_export.cmake \
+            -DENABLE_FTDIDEV=ON
           make
           popd
 
